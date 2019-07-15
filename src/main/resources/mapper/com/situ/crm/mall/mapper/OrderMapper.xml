@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.situ.crm.mall.mapper.OrderMapper">
+  
+	<!-- Result Map 结果映射 查询时使用 -->
+	<resultMap id="BaseResultMap" type="OrderModel">
+		<result column="id" property="id" />
+		<result column="cust_code" property="custCode" />
+		<result column="cust_name" property="custName" />
+		<result column="user_code" property="userCode" />
+		<result column="user_name" property="userName" />
+		<result column="prod_code" property="prodCode" />
+		<result column="prod_name" property="prodName" />
+		<result column="time" property="time" />
+		<result column="count" property="count" />
+		<result column="status" property="status" />
+		
+	</resultMap>
+
+	<!-- 查询条件 -->
+	<sql id="TiaoJian">
+		where 1=1
+		<if test="id !=null">
+			and id=#{id}
+		</if>
+		<if test="custCode !=null and custCode !=''">
+			and cust_code like #{custCode}
+		</if>
+		
+		<if test="userCode !=null and userCode !=''">
+			and user_code like #{userCode}
+		</if>
+		<if test="prodCode !=null and prodCode !=''">
+			and prod_code like #{prodCode}
+		</if>
+		
+		<if test="time !=null and time !=''">
+			and time #{time}
+		</if>
+		<if test="count !=null and count !=''">
+			and count like #{count}
+		</if>
+		<if test="status !=null and status !=''">
+			and status like #{status}
+		</if>
+		
+
+        
+	</sql>
+
+
+	<!-- table all fields sql片段 -->
+	<sql id="Base_Column_List">
+		id, cust_code, user_code,prod_code,time,count,status
+	</sql>
+	<!-- table all fields sql片段 -->
+	<sql id="custName">
+		mis.order_info
+	</sql>
+
+
+
+	<insert id="insert" parameterType="Object">
+		insert into
+		<include refid="custName" />
+		( cust_code, user_code,prod_code,time,count,status)
+		values(#{custCode},#{userCode},#{prodCode},#{time}
+		,#{count},#{status}
+		 )
+	</insert>
+
+	<delete id="deleteModel" parameterType="Object">
+		delete from
+		<include refid="custName" />
+		<include refid="TiaoJian"></include>
+
+	</delete>
+	<delete id="delete" parameterType="Object">
+		delete from
+		<include refid="custName" />
+		where where id=#{id}
+
+	</delete>
+
+	<!-- 修改记录，只修改只不为空的字段 -->
+	<update id="update" parameterType="Object">
+		update
+		<include refid="custName" />
+		set
+		<trim suffixOverrides=",">
+		    <if test="custCode != null and custCode != '' ">
+			cust_code = #{custCode},
+			</if>
+			<if test="userCode != null and userCode != '' ">
+			user_code = #{userCode},
+			</if>
+			<if test="prodCode != null and prodCode != '' ">
+			prod_code = #{prodCode},
+			</if>
+		    
+			<if test="time != null and time != '' ">
+			time = #{time},
+			</if>
+			<if test="count !=null and count !=''">
+				count = #{count},
+			</if>
+				<if test="status != null and status != '' ">
+			status = #{status},
+			</if>
+			
+			
+		</trim>
+	
+    where id=#{id}
+</update>
+
+
+	<!-- 根据id 查询系统用户 -->
+	<select id="selectById" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		from
+		<include refid="custName" />
+		where id=#{id}
+	</select>
+	<!-- 根据code 查询系统用户 -->
+	<select id="selectByCode" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		from
+		<include refid="custName" /> 
+		where cust_code=#{custCode} and user_code=#{userCode}
+	</select>
+	<!-- 查询系统用户列表 -->
+	<select id="selectCount" resultType="java.lang.Integer"
+		parameterType="Object">
+		select count(1)
+		from
+		<include refid="custName" />
+		<include refid="TiaoJian" />
+	</select>
+
+
+	<!-- 查询系统用户列表 -->
+	<select id="selectModel" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		,(SELECT mcin.cust_name FROM mis.customer_info as mcin where mcin.cust_code=mcc.cust_code)  as cust_name
+,(SELECT  us.user_name FROM mis.user as us where us.user_code=mcc.user_code) as user_name
+,(SELECT  us.name FROM mis.product_info as us where us.code=mcc.prod_code) as prod_name
+		from
+		<include refid="custName" />  as mcc
+		<include refid="TiaoJian" />								
+		limit ${rowStart},${pageLimit}
+	</select>
+	<!-- 查询系统用户列表 -->
+	<select id="selectAll" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+			,(SELECT mcin.cust_name FROM mis.customer_info as mcin where mcin.cust_code=mcc.cust_code)  as cust_name
+,(SELECT  us.user_name FROM mis.user as us where us.user_code=mcc.user_code) as user_name
+,(SELECT  us.name FROM mis.product_info as us where us.code=mcc.prod_code) as prod_name
+	
+		from
+		<include refid="custName" />  as mcc
+		<include refid="TiaoJian" />
+	</select>
+
+
+
+</mapper>   

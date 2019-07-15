@@ -1,0 +1,22 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /cust
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: 304097
+    url: jdbc:mysql://127.0.0.1:3306/mis?useSSL=false&useUnicode=true&characterEncoding=utf8&serverTimezone=Hongkong
+    username: root
+  mvc:
+    view:
+      prefix: /WEB-INF/web/
+      suffix: .jsp
+      
+      
+mybatis:
+  mapper-locations:  classpath:mapper/**/*.xml
+  type-aliases-package: com.situ.crm.*.model
+  configuration:
+       log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+ 

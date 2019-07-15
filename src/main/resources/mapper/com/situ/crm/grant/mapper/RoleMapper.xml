@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.situ.crm.grant.mapper.RoleMapper">
+
+	
+	<!-- Result Map 结果映射 查询时使用 -->
+	<resultMap id="BaseResultMap" type="RoleModel">
+		<result column="id" property="id" />
+		<result column="role_code" property="roleCode" />
+		<result column="role_name" property="roleName" />
+		<result column="descr" property="descr" />
+		
+		
+	</resultMap>
+
+	<!-- 查询条件 -->
+	<sql id="TiaoJian">
+		where 1=1
+		<if test="id !=null">
+			and id=#{id}
+		</if>
+		<if test="roleCode !=null and roleCode !=''">
+			and role_code like #{roleCode}
+		</if>
+		<if test="roleName !=null and roleName !=''">
+			and role_name  like #{roleName}
+		</if>
+		<if test="descr !=null and descr !=''">
+			and descr #{descr}
+		</if>
+		
+
+
+	</sql>
+
+
+	<!-- table all fields sql片段 -->
+	<sql id="Base_Column_List">
+		id, role_code, role_name,descr
+	</sql>
+	<!-- table all fields sql片段 -->
+	<sql id="roleName">
+		mis.role
+	</sql>
+
+
+
+	<insert id="insert" parameterType="Object">
+		insert into
+		<include refid="roleName" />
+		(role_code, role_name,descr)
+		values(#{roleCode},#{roleName},#{descr}
+		
+		 )
+	</insert>
+
+	<delete id="deleteModel" parameterType="Object">
+		delete from
+		<include refid="roleName" />
+		<include refid="TiaoJian"></include>
+
+	</delete>
+	<delete id="delete" parameterType="Object">
+		delete from
+		<include refid="roleName" />
+		where where id=#{id}
+
+	</delete>
+
+	<!-- 修改记录，只修改只不为空的字段 -->
+	<update id="update" parameterType="Object">
+		update
+		<include refid="roleName" />
+		set
+		<trim suffixOverrides=",">
+			<if test="roleName != null and roleName != '' ">
+				role_name = #{roleName},
+			</if>
+			<if test="descr != null and descr != '' ">
+			descr = #{descr},
+			</if>
+			
+			
+			
+			
+		</trim>
+		where role_code = #{roleCode}
+	
+</update>
+
+
+	<!-- 根据id 查询系统用户 -->
+	<select id="selectById" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		from
+		<include refid="roleName" />
+		where id=#{id}
+	</select>
+	<!-- 根据code 查询系统用户 -->
+	<select id="selectByCode" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		
+		from
+		<include refid="roleName" /> as mu
+		where role_code=#{roleCode}
+	</select>
+	<!-- 查询系统用户列表 -->
+	<select id="selectCount" resultType="java.lang.Integer"
+		parameterType="Object">
+		select count(1)
+		from
+		<include refid="roleName" />
+		<include refid="TiaoJian" />
+	</select>
+
+
+	<!-- 查询系统用户列表 -->
+	<select id="selectModel" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		from
+		<include refid="roleName" /> as mu
+		<include refid="TiaoJian" />								
+		limit ${rowStart},${pageLimit}
+	</select>
+	<!-- 查询系统用户列表 -->
+	<select id="selectAll" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		from
+		<include refid="roleName" />
+		<include refid="TiaoJian" />
+	</select>
+
+	
+
+</mapper>   

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.situ.crm.grant.mapper.MenuMapper">
+
+	<!-- Result Map 结果映射 查询时使用 -->
+	<resultMap id="BaseResultMap" type="MenuModel">
+		<result column="id" property="id" />
+		<result column="menu_code" property="menuCode" />
+		<result column="menu_name" property="menuName" />
+		<result column="menu_url" property="menuUrl" />
+		<result column="level" property="level" />
+		
+		<result column="parent_code" property="parentCode" />
+		
+	</resultMap>
+
+	<!-- 查询条件 -->
+	<sql id="TiaoJian">
+		where 1=1
+		<if test="id !=null">
+			and id=#{id}
+		</if>
+		<if test="menuCode !=null and menuCode !=''">
+			and menu_code like #{menuCode}
+		</if>
+		<if test="menuName !=null and menuName !=''">
+			and menu_name  like #{menuName}
+		</if>
+		<if test="menuUrl !=null and menuUrl !=''">
+			and menu_url #{menuUrl}
+		</if>	
+		<if test="parentCode !=null and parentCode !=''">
+			and parent_code like #{parentCode}
+		</if>
+		<if test="level !=null and level !=''">
+			and level like #{level}
+		</if>
+
+        
+	</sql>
+
+
+	<!-- table all fields sql片段 -->
+	<sql id="Base_Column_List">
+		id, menu_code, menu_name,menu_url,parent_code,level
+	</sql>
+	<!-- table all fields sql片段 -->
+	<sql id="menuName">
+		mis.menu_new
+	</sql>
+
+
+
+	<insert id="insert" parameterType="Object">
+		insert into
+		<include refid="menuName" />
+		(menu_code, menu_name,menu_url,level,parent_code)
+		values(#{menuCode},#{menuName},#{menuUrl}
+		,#{level},#{parentCode}
+		 )
+	</insert>
+
+	<delete id="deleteModel" parameterType="Object">
+		delete from
+		<include refid="menuName" />
+		<include refid="TiaoJian"></include>
+
+	</delete>
+	<delete id="delete" parameterType="Object">
+		delete from
+		<include refid="menuName" />
+		where where id=#{id}
+
+	</delete>
+
+	<!-- 修改记录，只修改只不为空的字段 -->
+	<update id="update" parameterType="Object">
+		update
+		<include refid="menuName" />
+		set
+		<trim suffixOverrides=",">
+			<if test="menuName != null and menuName != '' ">
+				menu_name = #{menuName},
+			</if>
+			<if test="menuUrl != null and menuUrl != '' ">
+			menu_url = #{menuUrl},
+			</if>
+			<if test="level !=null and level !=''">
+				level = #{level},
+			</if>
+			<if test="parentCode !=null and parentCode !=''">
+				parent_code = #{parentCode},
+			</if>
+			
+			
+			
+		</trim>
+		where menu_code = #{menuCode}
+	
+</update>
+
+
+	<!-- 根据id 查询系统用户 -->
+	<select id="selectById" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		from
+		<include refid="menuName" />
+		where id=#{id}
+	</select>
+	<!-- 根据code 查询系统用户 -->
+	<select id="selectByCode" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+			from
+		<include refid="menuName" /> as mu
+		where menu_code=#{menuCode}
+	</select>
+	<!-- 查询系统用户列表 -->
+	<select id="selectCount" resultType="java.lang.Integer"
+		parameterType="Object">
+		select count(1)
+		from
+		<include refid="menuName" />
+		<include refid="TiaoJian" />
+	</select>
+
+
+	<!-- 查询系统用户列表 -->
+	<select id="selectModel" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		
+		from
+		<include refid="menuName" /> as mu
+		<include refid="TiaoJian" />								
+		limit ${rowStart},${pageLimit}
+	</select>
+	<!-- 查询系统用户列表 -->
+	<select id="selectAll" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		from
+		<include refid="menuName" />
+		<include refid="TiaoJian" />
+	</select>
+
+
+
+</mapper>   

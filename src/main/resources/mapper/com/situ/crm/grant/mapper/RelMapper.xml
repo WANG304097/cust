@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.situ.crm.grant.mapper.RelMapper">
+
+	<!-- Result Map 结果映射 查询时使用 -->
+	<resultMap id="BaseResultMap" type="RelModel">
+		<result column="id" property="id" />
+		<result column="menu_code" property="menuCode" />
+		<result column="role_code" property="roleCode" />
+		<association property="roleModel"
+			javaType="com.situ.crm.grant.model.RoleModel">
+			<result column="role_code" property="roleCode" />
+			<result column="role_name" property="roleName" />
+		</association>
+		<association property="menuModel"
+			javaType="com.situ.crm.grant.model.MenuModel">
+			<result column="menu_code" property="menuCode" />
+			<result column="menu_name" property="menuName" />
+			<result column="menu_url" property="menuUrl" />
+			<result column="parent_code" property="parentCode" />
+		</association>
+
+	</resultMap>
+
+	<!-- 查询条件 -->
+	<sql id="TiaoJian">
+		where 1=1
+		<if test="id !=null">
+			and id=#{id}
+		</if>
+		<if test="roleCode !=null and roleCode !=''">
+			and role_code like #{roleCode}
+		</if>
+		<if test="menuCode !=null and menuCode !=''">
+			and menu_code like #{menuCode}
+		</if>
+
+	</sql>
+
+
+	<!-- table all fields sql片段 -->
+	<sql id="Base_Column_List">
+		id, role_code, menu_code
+	</sql>
+	<!-- table all fields sql片段 -->
+	<sql id="relName">
+		mis.rel
+	</sql>
+
+
+
+	<insert id="insert" parameterType="Object">
+		insert into
+		<include refid="relName" />
+		( role_code, menu_code)
+		values(#{roleCode},#{menuCode}
+		)
+	</insert>
+
+	<delete id="deleteModel" parameterType="Object">
+		delete from
+		<include refid="relName" />
+		<include refid="TiaoJian"></include>
+
+	</delete>
+	<delete id="delete" parameterType="Object">
+		delete from
+		<include refid="relName" />
+		where where id=#{id}
+
+	</delete>
+
+	<!-- 修改记录，只修改只不为空的字段 -->
+	<update id="update" parameterType="Object">
+		update
+		<include refid="relName" />
+		set
+		<trim suffixOverrides=",">
+			<if test="roleCode !=null and roleCode !=''">
+				roleCode = #{roleCode},
+			</if>
+			<if test="menuCode !=null and menuCode !=''">
+				menuCode = #{menuCode},
+			</if>
+		</trim>
+		where where id=#{id}
+
+	</update>
+
+
+	<!-- 根据id 查询系统用户 -->
+	<select id="selectById" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		from
+		<include refid="relName" />
+		where id=#{id}
+	</select>
+	<!-- 根据code 查询系统用户 -->
+	<select id="selectByCode" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		,(SELECT mr.role_name FROM mis.role as mr where
+		mr.role_code=mrl.role_code)as role_name
+		,(SELECT mm.menu_name FROM mis.menu_new  as mm where mm.menu_code=mrl.menu_code)as
+		menu_name
+		,(SELECT mm.menu_url FROM mis.menu_new as mm where mm.menu_code=mrl.menu_code)as
+		menu_url
+		,(SELECT mm.parent_code FROM mis.menu_new as mm where
+		mm.menu_code=mrl.menu_code)as parent_code
+
+		from
+		<include refid="relName" />
+		as mrl
+		where role_code=#{roleCode} and menu_code=#{menuCode}
+	</select>
+	<!-- 查询系统用户列表 -->
+	<select id="selectCount" resultType="java.lang.Integer"
+		parameterType="Object">
+		select count(1)
+		from
+		<include refid="relName" />
+		<include refid="TiaoJian" />
+	</select>
+
+
+	<!-- 查询系统用户列表 -->
+	<select id="selectModel" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+
+		,(SELECT mr.role_name FROM mis.role as mr where
+		mr.role_code=mrl.role_code)as role_name
+		,(SELECT mm.menu_name FROM mis.menu_new as mm where mm.menu_code=mrl.menu_code)as
+		menu_name
+		,(SELECT mm.menu_url FROM mis.menu_new as mm where mm.menu_code=mrl.menu_code)as
+		menu_url
+		,(SELECT mm.parent_code FROM mis.menu_new as mm where
+		mm.menu_code=mrl.menu_code)as parent_code
+		from
+		<include refid="relName" />
+		as mrl
+		<include refid="TiaoJian" />
+		order by menu_code
+		limit ${rowStart},${pageLimit}
+
+	</select>
+	<!-- 查询系统用户列表 -->
+	<select id="selectAll" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+
+		,(SELECT mr.role_name FROM mis.role as mr where
+		mr.role_code=mrl.role_code)as role_name
+		,(SELECT mm.menu_name FROM mis.menu_new as mm where mm.menu_code=mrl.menu_code)as
+		menu_name
+		,(SELECT mm.menu_url FROM mis.menu_new as mm where mm.menu_code=mrl.menu_code)as
+		menu_url
+		,(SELECT mm.parent_code FROM mis.menu_new as mm where
+		mm.menu_code=mrl.menu_code)as parent_code
+		from
+		<include refid="relName" />
+		as mrl
+		<include refid="TiaoJian" />
+		order by menu_code
+
+
+	</select>
+
+
+
+</mapper>   

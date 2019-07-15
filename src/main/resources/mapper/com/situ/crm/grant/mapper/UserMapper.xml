@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.situ.crm.grant.mapper.UserMapper">
+
+	<!-- Result Map 结果映射 查询时使用 -->
+	<resultMap id="BaseResultMap" type="UserModel">
+		<result column="id" property="id" />
+		<result column="user_code" property="userCode" />
+		<result column="user_name" property="userName" />
+		<result column="user_pass" property="userPass" />
+		<result column="role_code" property="roleCode" />
+		<result column="role_name" property="roleName" />
+		<result column="parent_code" property="parentCode" />
+		
+	</resultMap>
+
+	<!-- 查询条件 -->
+	<sql id="TiaoJian">
+		where 1=1
+		<if test="id !=null">
+			and id=#{id}
+		</if>
+		<if test="userCode !=null and userCode !=''">
+			and user_code like #{userCode}
+		</if>
+		<if test="userName !=null and userName !=''">
+			and user_name  like #{userName}
+		</if>
+		<if test="userPass !=null and userPass !=''">
+			and user_pass #{userPass}
+		</if>
+		<if test="roleCode !=null and roleCode !=''">
+			and role_code like #{roleCode}
+		</if>
+		<if test="parentCode !=null and parentCode !=''">
+			and parent_code like #{parentCode}
+		</if>
+		
+
+        
+	</sql>
+
+
+	<!-- table all fields sql片段 -->
+	<sql id="Base_Column_List">
+		id, user_code, user_name,user_pass,role_code,parent_code
+	</sql>
+	<!-- table all fields sql片段 -->
+	<sql id="UserName">
+		mis.user
+	</sql>
+
+
+
+	<insert id="insert" parameterType="Object">
+		insert into
+		<include refid="UserName" />
+		(user_code, user_name,user_pass,role_code,parent_code)
+		values(#{userCode},#{userName},#{userPass}
+		,#{roleCode},#{parentCode}
+		 )
+	</insert>
+
+	<delete id="deleteModel" parameterType="Object">
+		delete from
+		<include refid="UserName" />
+		<include refid="TiaoJian"></include>
+
+	</delete>
+	<delete id="delete" parameterType="Object">
+		delete from
+		<include refid="UserName" />
+		where where id=#{id}
+
+	</delete>
+
+	<!-- 修改记录，只修改只不为空的字段 -->
+	<update id="update" parameterType="Object">
+		update
+		<include refid="UserName" />
+		set
+		<trim suffixOverrides=",">
+			<if test="userName != null and userName != '' ">
+				user_name = #{userName},
+			</if>
+			<if test="userPass != null and userPass != '' ">
+			user_pass = #{userPass},
+			</if>
+			<if test="roleCode !=null and roleCode !=''">
+				role_code = #{roleCode},
+			</if>
+			<if test="parentCode !=null and parentCode !=''">
+				parent_code = #{parentCode},
+			</if>
+			
+			
+			
+		</trim>
+		where user_code = #{userCode}
+	
+</update>
+
+
+	<!-- 根据id 查询系统用户 -->
+	<select id="selectById" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		from
+		<include refid="UserName" />
+		where id=#{id}
+	</select>
+	<!-- 根据code 查询系统用户 -->
+	<select id="selectByCode" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		,(SELECT mr.role_name FROM mis.role as mr where mr.role_code=mu.role_code) as role_name
+		from
+		<include refid="UserName" /> as mu
+		where user_code=#{userCode}
+	</select>
+	<!-- 查询系统用户列表 -->
+	<select id="selectCount" resultType="java.lang.Integer"
+		parameterType="Object">
+		select count(1)
+		from
+		<include refid="UserName" />
+		<include refid="TiaoJian" />
+	</select>
+
+
+	<!-- 查询系统用户列表 -->
+	<select id="selectModel" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		,(SELECT mr.role_name FROM mis.role as mr where mr.role_code=mu.role_code) as role_name
+		from
+		<include refid="UserName" /> as mu
+		<include refid="TiaoJian" />								
+		limit ${rowStart},${pageLimit}
+	</select>
+	<!-- 查询系统用户列表 -->
+	<select id="selectAll" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+	,(SELECT mr.role_name FROM mis.role as mr where mr.role_code=mu.role_code) as role_name
+		
+		from
+		<include refid="UserName" />  as mu
+		<include refid="TiaoJian" />
+	</select>
+
+
+
+</mapper>   
